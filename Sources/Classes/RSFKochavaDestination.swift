@@ -70,6 +70,41 @@ class RSKochavaDestination: RSDestinationPlugin {
     }
 }
 
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+
+extension RSKochavaDestination: RSPushNotifications {
+    func registeredForRemoteNotifications(deviceToken: Data) {
+        KVAPushNotificationsToken.register(withData: deviceToken)
+    }
+    
+    func receivedRemoteNotification(userInfo: [AnyHashable : Any]) {
+        let event = KVAEvent(type: .pushOpened)
+        event.payloadDictionary = userInfo
+        event.send()
+    }
+}
+
+#endif
+
+#if os(watchOS)
+
+import WatchKit
+
+extension RSKochavaDestination: RSPushNotifications {
+    func registeredForRemoteNotifications(deviceToken: Data) {
+        KVAPushNotificationsToken.register(withData: deviceToken)
+    }
+    
+    func receivedRemoteNotification(userInfo: [AnyHashable: Any]) {
+        let event = KVAEvent(type: .pushOpened)
+        event.payloadDictionary = userInfo
+        event.send()
+    }
+}
+
+#endif
+
+
 // MARK: - Support methods
 
 extension RSKochavaDestination {

@@ -20,10 +20,6 @@ Pod::Spec.new do |s|
     s.static_framework = true
     s.swift_version = '5.3'
 
-    ## Ref: https://github.com/CocoaPods/CocoaPods/issues/10065
-#    s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
-#    s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
-
     s.dependency 'RudderStack', '~> 1.0'
     s.dependency 'Apple-Cocoapod-KochavaTracker', '5.1.1'
     s.dependency 'Apple-Cocoapod-KochavaAdNetwork', '5.1.1'
