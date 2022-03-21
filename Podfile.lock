@@ -1,0 +1,40 @@
+PODS:
+  - Apple-Cocoapod-KochavaAdNetwork (5.1.1):
+    - Apple-Cocoapod-KochavaTracker (~> 5.1.1)
+  - Apple-Cocoapod-KochavaCore (5.1.1)
+  - Apple-Cocoapod-KochavaTracker (5.1.1):
+    - Apple-Cocoapod-KochavaCore (~> 5.1.1)
+  - RudderKochava (1.0.0):
+    - Apple-Cocoapod-KochavaAdNetwork (= 5.1.1)
+    - Apple-Cocoapod-KochavaTracker (= 5.1.1)
+    - RudderStack (~> 1.0)
+  - RudderStack (1.0.0)
+
+DEPENDENCIES:
+  - Apple-Cocoapod-KochavaAdNetwork (= 5.1.1)
+  - Apple-Cocoapod-KochavaTracker (= 5.1.1)
+  - RudderKochava (from `.`)
+  - RudderStack (from `~/Documents/Rudder/RudderStack-Cocoa/`)
+
+SPEC REPOS:
+  trunk:
+    - Apple-Cocoapod-KochavaAdNetwork
+    - Apple-Cocoapod-KochavaCore
+    - Apple-Cocoapod-KochavaTracker
+
+EXTERNAL SOURCES:
+  RudderKochava:
+    :path: "."
+  RudderStack:
+    :path: "~/Documents/Rudder/RudderStack-Cocoa/"
+
+SPEC CHECKSUMS:
+  Apple-Cocoapod-KochavaAdNetwork: 524d74c6a107ca8a66b7e701b9cca05d35ab11ec
+  Apple-Cocoapod-KochavaCore: 60f450b08045e75905ddf8796525c1c9fe26339b
+  Apple-Cocoapod-KochavaTracker: 5413fabff949ebcd8e4e1807d61721f375fbe11d
+  RudderKochava: b3fb817f27d8e0755f0b56705a2c1def3cbc1a94
+  RudderStack: 705069efa869eadfe3a5aee0300dd38fa20cfbeb
+
+PODFILE CHECKSUM: 63f4dc74707f783515efce4029be1eacbfd616b2
+
+COCOAPODS: 1.11.2
