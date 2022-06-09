@@ -33,17 +33,18 @@ class RSKochavaDestination: RSDestinationPlugin {
                 KVATracker.shared.start(withAppGUIDString: appGUID)
                 KVALog.shared.level = getLogLevel(rsLogLevel: client?.configuration?.logLevel ?? .none)
             }
+            client?.log(message: "Initializing Kochava SDK", logLevel: .debug)
         }
     }
     
     func track(message: TrackMessage) -> TrackMessage? {
         var kochavaEvent: KVAEvent?
+        /// For E-Commerce event mapping visit: https://support.kochava.com/reference-information/post-install-event-examples/
         if let eventType = getKochavaECommerceEventType(from: message.event) {
             kochavaEvent = KVAEvent.init(type: eventType)
             if let properties = message.properties {
                 switch eventType {
                 case KVAEventType.purchase:
-                    // userId, Name, ContentId, Price, currency, Checkout as Guest
                     insertECommerceProductData(params: &kochavaEvent, properties: properties)
                     insertCurrency(params: &kochavaEvent, properties: properties)
                     if let revenue = properties[RSKeys.Ecommerce.revenue] {
@@ -54,39 +55,36 @@ class RSKochavaDestination: RSDestinationPlugin {
                         kochavaEvent?.priceDoubleNumber = Double("\(total)") as NSNumber?
                     }
                 case KVAEventType.addToCart:
-                    // userId, Name, ContentId, Item Quantity
                     insertProductProperties(params: &kochavaEvent, properties: properties)
                     if let quantity = properties[RSKeys.Ecommerce.quantity] as? NSNumber {
                         kochavaEvent?.quantityDoubleNumber = quantity
                     }
                 case KVAEventType.addToWishList:
-                    // UserId, Name, ContentId, Referral From
                     insertProductProperties(params: &kochavaEvent, properties: properties)
                 case KVAEventType.checkoutStart:
-                    // userId, Name, ContentId, Checkout as Guest, Currency
                     insertECommerceProductData(params: &kochavaEvent, properties: properties)
                     insertCurrency(params: &kochavaEvent, properties: properties)
                 case KVAEventType.rating:
-                    // Rating Value, Maximum Rating
                     if let rating = properties[RSKeys.Ecommerce.rating] as? NSNumber {
                         kochavaEvent?.ratingValueDoubleNumber = rating
                     }
                 case KVAEventType.search:
-                    // uri, result
                     if let query = properties[RSKeys.Ecommerce.query] as? String {
                         kochavaEvent?.uriString = query
                     }
                 case KVAEventType.view:
-                    // userId, name, contentId, referral form
                     insertProductProperties(params: &kochavaEvent, properties: properties)
                 default:
                     break
                 }
             }
-        } else {
+        }
+        // Custom event:
+        else {
             kochavaEvent = KVAEvent(customWithNameString: message.event)
         }
-        if let properties = message.properties {//}, let params = getCustomPropertiesData(properties: properties) {
+        // Custom properties
+        if let properties = message.properties {
             kochavaEvent?.infoDictionary = properties
         }
         if let userId = message.userId, !userId.isEmpty {
@@ -100,7 +98,7 @@ class RSKochavaDestination: RSDestinationPlugin {
     func screen(message: ScreenMessage) -> ScreenMessage? {
         if !message.name.isEmpty {
             if let properties = message.properties {
-                KVAEvent.sendCustom(withNameString: "screen view \(message.name)", infoDictionary: properties) //getCustomPropertiesData(properties: properties))
+                KVAEvent.sendCustom(withNameString: "screen view \(message.name)", infoDictionary: properties)
             } else {
                 KVAEvent.sendCustom(withNameString: "screen view \(message.name)")
             }
@@ -232,29 +230,6 @@ extension RSKochavaDestination {
             return nil
         }
     }
-    
-//    func getCustomPropertiesData(properties: [String: Any]) -> [String: Any]? {
-//        if properties.isEmpty {
-//            return nil
-//        }
-//        var params: [String: Any]?
-//        for (key, value) in properties {
-//            if TRACK_RESERVED_KEYWORDS.contains(key) {
-//                continue
-//            }
-//            switch value {
-//            case let v as String:
-//                params?[key] = v
-//            case let v as Int:
-//                params?[key] = Double(v)
-//            case let v as Double:
-//                params?[key] = v
-//            default:
-//                params?[key] = "\(value)"
-//            }
-//        }
-//        return params
-//    }
 }
 
 struct RudderKochavaConfig: Codable {
