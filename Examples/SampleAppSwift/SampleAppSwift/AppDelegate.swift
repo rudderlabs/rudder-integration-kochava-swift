@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import RudderStack
+import Rudder
 import RudderKochava
 
 @UIApplicationMain
@@ -24,9 +24,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .trackLifecycleEvents(true)
             .recordScreenViews(true)
         
-        client = RSClient(config: config)
+        client = RSClient.sharedInstance()
+        client?.configure(with: config)
 
-        client?.add(destination: RudderKochavaDestination())        
+        client?.addDestination(RudderKochavaDestination())
         return true
     }
 
