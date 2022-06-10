@@ -73,15 +73,17 @@ class RSKochavaDestination: RSDestinationPlugin {
                 default:
                     break
                 }
+                // Filter ECommerce event property from custom property
+                insertCustomPropertiesData(event: &kochavaEvent, properties: properties)
             }
         }
-        // Custom event:
+        // Custom event
         else {
             kochavaEvent = KVAEvent(customWithNameString: message.event)
-        }
-        // Custom properties
-        if let properties = message.properties {
-            kochavaEvent?.infoDictionary = properties
+            // Custom properties
+            if let properties = message.properties {
+                kochavaEvent?.infoDictionary = properties
+            }
         }
         if let userId = message.userId, !userId.isEmpty {
             kochavaEvent?.userIdString = userId
@@ -145,6 +147,10 @@ extension RSKochavaDestination: RSPushNotifications {
 // MARK: - Support methods
 
 extension RSKochavaDestination {
+    var TRACK_RESERVED_KEYWORDS: [String] {
+        return [RSKeys.Ecommerce.products, RSKeys.Ecommerce.productName, RSKeys.Ecommerce.productId, RSKeys.Ecommerce.currency, RSKeys.Ecommerce.revenue, RSKeys.Ecommerce.value, RSKeys.Ecommerce.total, RSKeys.Ecommerce.quantity, RSKeys.Ecommerce.query]
+    }
+    
     func getKochavaECommerceEventType(from rudderEvent: String) -> KVAEventType? {
         switch rudderEvent {
         case RSEvents.Ecommerce.productAdded: return KVAEventType.addToCart
@@ -220,6 +226,20 @@ extension RSKochavaDestination {
             return String(data: jsonData, encoding: .utf8)
         } catch {
             return nil
+        }
+    }
+    
+    // This method will filter out ECommerce event property
+    func insertCustomPropertiesData(event: inout KVAEvent?, properties: [String: Any]) {
+        var params = [String: Any]()
+        for (key, value) in properties {
+            if TRACK_RESERVED_KEYWORDS.contains(key) {
+                continue
+            }
+            params[key] = value
+        }
+        if !params.isEmpty {
+            event?.infoDictionary = params
         }
     }
 }
