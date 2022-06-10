@@ -22,7 +22,7 @@ class RSKochavaDestination: RSDestinationPlugin {
             client?.log(message: "Failed to Initialize Kochava Factory", logLevel: .warning)
             return
         }
-        if !kochavaConfig.appGuid.isEmpty {
+        if !kochavaConfig.appGUID.isEmpty {
             if kochavaConfig.appTrackingTransparency {
                 KVATracker.shared.appTrackingTransparency.enabledBool = kochavaConfig.appTrackingTransparency
             }
