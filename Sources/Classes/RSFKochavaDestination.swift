@@ -6,45 +6,84 @@
 //
 
 import Foundation
-import RudderStack
+import Rudder
 import KochavaTracker
 import KochavaAdNetwork
 
 class RSKochavaDestination: RSDestinationPlugin {
     let type = PluginType.destination
-    let key = "Firebase"
+    let key = "Kochava"
     var client: RSClient?
     var controller = RSController()
     
     func update(serverConfig: RSServerConfig, type: UpdateType) {
         guard type == .initial else { return }
-        if let destination = serverConfig.getDestination(by: key), let config = destination.config?.dictionaryValue {
-            if let appGUID = config["apiKey"] as? String {
-                if let appTrackingTransparency = config["appTrackingTransparency"] as? Bool {
-                    KVATracker.shared.appTrackingTransparency.enabledBool = appTrackingTransparency
-                }
-                if let skAdNetwork = config["skAdNetwork"] as? Bool, skAdNetwork {
-                    KVAAdNetworkProduct.shared.register()
-                }
-                KVATracker.shared.start(withAppGUIDString: appGUID)
-                KVALog.shared.level = getLogLevel(rsLogLevel: client?.configuration.logLevel ?? .none)
+        guard let kochavaConfig: RudderKochavaConfig = serverConfig.getConfig(forPlugin: self) else {
+            client?.log(message: "Failed to Initialize Kochava Factory", logLevel: .warning)
+            return
+        }
+        if !kochavaConfig.appGUID.isEmpty {
+            if kochavaConfig.appTrackingTransparency {
+                KVATracker.shared.appTrackingTransparency.enabledBool = kochavaConfig.appTrackingTransparency
             }
+            if kochavaConfig.skAdNetwork {
+                KVAAdNetworkProduct.shared.register()
+            }
+            KVATracker.shared.start(withAppGUIDString: kochavaConfig.appGUID)
+            KVALog.shared.level = getLogLevel(rsLogLevel: client?.configuration?.logLevel ?? .none)
+            client?.log(message: "Initializing Kochava SDK", logLevel: .debug)
         }
     }
     
     func track(message: TrackMessage) -> TrackMessage? {
         var kochavaEvent: KVAEvent?
+        /// For E-Commerce event mapping visit: https://support.kochava.com/reference-information/post-install-event-examples/
         if let eventType = getKochavaECommerceEventType(from: message.event) {
             kochavaEvent = KVAEvent.init(type: eventType)
             if let properties = message.properties {
-                insertECommerceData(params: &kochavaEvent, properties: properties)
-                insertECommerceProductData(params: &kochavaEvent, properties: properties)
+                switch eventType {
+                case KVAEventType.purchase:
+                    insertECommerceProductData(params: &kochavaEvent, properties: properties)
+                    insertCurrency(params: &kochavaEvent, properties: properties)
+                    if let revenue = properties[RSKeys.Ecommerce.revenue] {
+                        kochavaEvent?.priceDoubleNumber = Double("\(revenue)") as NSNumber?
+                    } else if let value = properties[RSKeys.Ecommerce.value] {
+                        kochavaEvent?.priceDoubleNumber = Double("\(value)") as NSNumber?
+                    } else if let total = properties[RSKeys.Ecommerce.total] {
+                        kochavaEvent?.priceDoubleNumber = Double("\(total)") as NSNumber?
+                    }
+                case KVAEventType.addToCart:
+                    insertProductProperties(params: &kochavaEvent, properties: properties)
+                    if let quantity = properties[RSKeys.Ecommerce.quantity] as? NSNumber {
+                        kochavaEvent?.quantityDoubleNumber = quantity
+                    }
+                case KVAEventType.addToWishList, KVAEventType.view:
+                    insertProductProperties(params: &kochavaEvent, properties: properties)
+                case KVAEventType.checkoutStart:
+                    insertECommerceProductData(params: &kochavaEvent, properties: properties)
+                    insertCurrency(params: &kochavaEvent, properties: properties)
+                case KVAEventType.rating:
+                    if let rating = properties[RSKeys.Ecommerce.rating] as? NSNumber {
+                        kochavaEvent?.ratingValueDoubleNumber = rating
+                    }
+                case KVAEventType.search:
+                    if let query = properties[RSKeys.Ecommerce.query] as? String {
+                        kochavaEvent?.uriString = query
+                    }
+                default:
+                    break
+                }
+                // Filter ECommerce event property from custom property
+                insertCustomPropertiesData(event: &kochavaEvent, properties: properties)
             }
-        } else {
-            kochavaEvent = KVAEvent(customWithNameString: message.event)
         }
-        if let properties = message.properties {
-            insertCustomPropertiesData(event: &kochavaEvent, properties: properties)
+        // Custom event
+        else {
+            kochavaEvent = KVAEvent(customWithNameString: message.event)
+            // Custom properties
+            if let properties = message.properties {
+                kochavaEvent?.infoDictionary = properties
+            }
         }
         if let userId = message.userId, !userId.isEmpty {
             kochavaEvent?.userIdString = userId
@@ -63,10 +102,6 @@ class RSKochavaDestination: RSDestinationPlugin {
             }
         }
         return message
-    }
-    
-    func reset() {
-        KVATracker.shared.invalidate()
     }
 }
 
@@ -109,18 +144,18 @@ extension RSKochavaDestination: RSPushNotifications {
 
 extension RSKochavaDestination {
     var TRACK_RESERVED_KEYWORDS: [String] {
-        return ["product_id", "name", "currency", "quantity", "value", "revenue", "total", "query", "products"]
+        return [RSKeys.Ecommerce.products, RSKeys.Ecommerce.productName, RSKeys.Ecommerce.productId, RSKeys.Ecommerce.currency, RSKeys.Ecommerce.revenue, RSKeys.Ecommerce.value, RSKeys.Ecommerce.total, RSKeys.Ecommerce.quantity, RSKeys.Ecommerce.query]
     }
     
     func getKochavaECommerceEventType(from rudderEvent: String) -> KVAEventType? {
         switch rudderEvent {
-        case RSECommerceConstants.ECommProductAdded: return KVAEventType.addToCart
-        case RSECommerceConstants.ECommProductAddedToWishList: return KVAEventType.addToWishList
-        case RSECommerceConstants.ECommCheckoutStarted: return KVAEventType.checkoutStart
-        case RSECommerceConstants.ECommOrderCompleted: return KVAEventType.purchase
-        case RSECommerceConstants.ECommProductsSearched: return KVAEventType.search
-        case RSECommerceConstants.ECommProductReviewed: return KVAEventType.rating
-        case RSECommerceConstants.ECommProductViewed: return KVAEventType.view
+        case RSEvents.Ecommerce.productAdded: return KVAEventType.addToCart
+        case RSEvents.Ecommerce.productAddedToWishList: return KVAEventType.addToWishList
+        case RSEvents.Ecommerce.checkoutStarted: return KVAEventType.checkoutStart
+        case RSEvents.Ecommerce.orderCompleted: return KVAEventType.purchase
+        case RSEvents.Ecommerce.productsSearched: return KVAEventType.search
+        case RSEvents.Ecommerce.productReviewed: return KVAEventType.rating
+        case RSEvents.Ecommerce.productViewed: return KVAEventType.view
         default: return nil
         }
     }
@@ -142,48 +177,41 @@ extension RSKochavaDestination {
         }
     }
     
-    func insertECommerceData(params: inout KVAEvent?, properties: [String: Any]) {
-        if let revenue = properties["revenue"] {
-            params?.priceDoubleNumber = Double("\(revenue)") as NSNumber?
-        } else if let value = properties["value"] {
-            params?.priceDoubleNumber = Double("\(value)") as NSNumber?
-        } else if let total = properties["total"] {
-            params?.priceDoubleNumber = Double("\(total)") as NSNumber?
+    /// Set `productId` and `productName` present at the root of the properties
+    func insertProductProperties(params: inout KVAEvent?, properties: [String: Any]) {
+        if let name = properties[RSKeys.Ecommerce.productName] as? String {
+            params?.nameString = name
         }
-        
-        if let quantity = properties["quantity"] {
-            params?.quantityDoubleNumber = Double("\(quantity)") as NSNumber?
-        }
-        
-        if let currency = properties["currency"] {
-            params?.currencyString = "\(currency)"
+        if let productId = properties[RSKeys.Ecommerce.productId] as? String{
+            params?.contentIdString = productId
         }
     }
     
+    func insertCurrency(params: inout KVAEvent?, properties: [String: Any]) {
+        if let currency = properties[RSKeys.Ecommerce.currency] as? String {
+            params?.currencyString = currency
+        }
+    }
+    
+    /// Set `productId` and `productName` present inside the products array
     func insertECommerceProductData(params: inout KVAEvent?, properties: [String: Any]) {
         var nameList: [String]?
         var productIdList: [String]?
         
-        if let products = properties["products"] as? [[String: Any]] {
+        if let products = properties[RSKeys.Ecommerce.products] as? [[String: Any]] {
             nameList = products.compactMap { dict in
-                return dict["name"] as? String
+                return dict[RSKeys.Ecommerce.productName] as? String
             }
             productIdList = products.compactMap { dict in
-                return dict["product_id"] as? String
+                return dict[RSKeys.Ecommerce.productId] as? String
             }
-        } else {
-            if let name = properties["name"] as? String {
-                nameList?.append(name)
+        
+            if let nameList = nameList, let names = getJSONString(list: nameList) {
+                params?.nameString = names
             }
-            if let productId = properties["product_id"] as? String {
-                productIdList?.append(productId)
+            if let productIdList = productIdList, let ids = getJSONString(list: productIdList) {
+                params?.contentIdString = ids
             }
-        }
-        if let nameList = nameList, let names = getJSONString(list: nameList) {
-            params?.nameString = names
-        }
-        if let productIdList = productIdList, let ids = getJSONString(list: productIdList) {
-            params?.contentIdString = ids
         }
     }
     
@@ -197,24 +225,41 @@ extension RSKochavaDestination {
         }
     }
     
+    // This method will filter out ECommerce event property
     func insertCustomPropertiesData(event: inout KVAEvent?, properties: [String: Any]) {
-        var params: [String: Any]?
+        var params = [String: Any]()
         for (key, value) in properties {
             if TRACK_RESERVED_KEYWORDS.contains(key) {
                 continue
             }
-            switch value {
-            case let v as String:
-                params?[key] = v
-            case let v as Int:
-                params?[key] = Double(v)
-            case let v as Double:
-                params?[key] = v
-            default:
-                params?[key] = "\(value)"
-            }
+            params[key] = value
         }
-        event?.infoDictionary = params
+        if !params.isEmpty {
+            event?.infoDictionary = params
+        }
+    }
+}
+
+struct RudderKochavaConfig: Codable {
+    private let _appGUID: String?
+    var appGUID: String {
+        return _appGUID ?? ""
+    }
+    
+    private let _appTrackingTransparency: Bool?
+    var appTrackingTransparency: Bool {
+        return _appTrackingTransparency ?? false
+    }
+    
+    private let _skAdNetwork: Bool?
+    var skAdNetwork: Bool {
+        return _skAdNetwork ?? false
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case _appGUID = "apiKey"
+        case _appTrackingTransparency = "appTrackingTransparency"
+        case _skAdNetwork = "skAdNetwork"
     }
 }
 
