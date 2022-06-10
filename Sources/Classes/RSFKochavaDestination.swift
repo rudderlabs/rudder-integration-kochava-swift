@@ -29,7 +29,7 @@ class RSKochavaDestination: RSDestinationPlugin {
             if kochavaConfig.skAdNetwork {
                 KVAAdNetworkProduct.shared.register()
             }
-            KVATracker.shared.start(withAppGUIDString: kochavaConfig.appGuid)
+            KVATracker.shared.start(withAppGUIDString: kochavaConfig.appGUID)
             KVALog.shared.level = getLogLevel(rsLogLevel: client?.configuration?.logLevel ?? .none)
             client?.log(message: "Initializing Kochava SDK", logLevel: .debug)
         }
