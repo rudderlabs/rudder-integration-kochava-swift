@@ -103,10 +103,6 @@ class RSKochavaDestination: RSDestinationPlugin {
         }
         return message
     }
-    
-    func reset() {
-        KVATracker.shared.invalidate()
-    }
 }
 
 #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
@@ -193,7 +189,7 @@ extension RSKochavaDestination {
     
     func insertCurrency(params: inout KVAEvent?, properties: [String: Any]) {
         if let currency = properties[RSKeys.Ecommerce.currency] as? String {
-            params?.nameString = currency
+            params?.currencyString = currency
         }
     }
     
