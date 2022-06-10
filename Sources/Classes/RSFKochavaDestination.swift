@@ -246,7 +246,7 @@ extension RSKochavaDestination {
 
 struct RudderKochavaConfig: Codable {
     private let _appGUID: String?
-    var appGuid: String {
+    var appGUID: String {
         return _appGUID ?? ""
     }
     
