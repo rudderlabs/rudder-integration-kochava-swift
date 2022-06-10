@@ -22,17 +22,15 @@ class RSKochavaDestination: RSDestinationPlugin {
             client?.log(message: "Failed to Initialize Kochava Factory", logLevel: .warning)
             return
         }
-        if let destination = serverConfig.getDestination(by: key), let config = destination.config?.dictionaryValue {
-            if let appGUID = config["apiKey"] as? String {
-                if let appTrackingTransparency = config["appTrackingTransparency"] as? Bool {
-                    KVATracker.shared.appTrackingTransparency.enabledBool = appTrackingTransparency
-                }
-                if let skAdNetwork = config["skAdNetwork"] as? Bool, skAdNetwork {
-                    KVAAdNetworkProduct.shared.register()
-                }
-                KVATracker.shared.start(withAppGUIDString: appGUID)
-                KVALog.shared.level = getLogLevel(rsLogLevel: client?.configuration?.logLevel ?? .none)
+        if !kochavaConfig.appGuid.isEmpty {
+            if kochavaConfig.appTrackingTransparency {
+                KVATracker.shared.appTrackingTransparency.enabledBool = kochavaConfig.appTrackingTransparency
             }
+            if kochavaConfig.skAdNetwork {
+                KVAAdNetworkProduct.shared.register()
+            }
+            KVATracker.shared.start(withAppGUIDString: kochavaConfig.appGuid)
+            KVALog.shared.level = getLogLevel(rsLogLevel: client?.configuration?.logLevel ?? .none)
             client?.log(message: "Initializing Kochava SDK", logLevel: .debug)
         }
     }
@@ -59,7 +57,7 @@ class RSKochavaDestination: RSDestinationPlugin {
                     if let quantity = properties[RSKeys.Ecommerce.quantity] as? NSNumber {
                         kochavaEvent?.quantityDoubleNumber = quantity
                     }
-                case KVAEventType.addToWishList:
+                case KVAEventType.addToWishList, KVAEventType.view:
                     insertProductProperties(params: &kochavaEvent, properties: properties)
                 case KVAEventType.checkoutStart:
                     insertECommerceProductData(params: &kochavaEvent, properties: properties)
@@ -72,8 +70,6 @@ class RSKochavaDestination: RSDestinationPlugin {
                     if let query = properties[RSKeys.Ecommerce.query] as? String {
                         kochavaEvent?.uriString = query
                     }
-                case KVAEventType.view:
-                    insertProductProperties(params: &kochavaEvent, properties: properties)
                 default:
                     break
                 }
@@ -149,10 +145,6 @@ extension RSKochavaDestination: RSPushNotifications {
 // MARK: - Support methods
 
 extension RSKochavaDestination {
-    var TRACK_RESERVED_KEYWORDS: [String] {
-        return ["product_id", "name", "currency", "quantity", "value", "revenue", "total", "query", "products"]
-    }
-    
     func getKochavaECommerceEventType(from rudderEvent: String) -> KVAEventType? {
         switch rudderEvent {
         case RSEvents.Ecommerce.productAdded: return KVAEventType.addToCart
