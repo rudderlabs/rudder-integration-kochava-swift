@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
     s.source           = { :git => 'https://github.com/rudderlabs/rudder-kochava-swift.git' , :tag => 'v#{s.version}'}
     
     s.ios.deployment_target = '13.0'
-    s.osx.deployment_target = '10.13'
+    s.osx.deployment_target = '10.14'
     s.tvos.deployment_target = '11.0'
     s.watchos.deployment_target = '7.0'
     
@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
     s.static_framework = true
     s.swift_version = '5.3'
 
-    s.dependency 'Rudder', '~> 2.0.0'
+    s.dependency 'Rudder', '~> 2.0.1'
     s.dependency 'Apple-Cocoapod-KochavaTracker', '5.1.1'
     s.dependency 'Apple-Cocoapod-KochavaAdNetwork', '5.1.1'
 end

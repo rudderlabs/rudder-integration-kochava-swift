@@ -1,10 +1,11 @@
+source 'https://github.com/CocoaPods/Specs.git'
 workspace 'RudderKochava.xcworkspace'
 use_frameworks!
 inhibit_all_warnings!
 platform :ios, '13.0'
 
 def shared_pods
-    pod 'Rudder', '~> 2.0.0'
+    pod 'Rudder', '~> 2.0.1'
 end
 
 target 'RudderKochava' do

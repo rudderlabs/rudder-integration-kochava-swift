@@ -35,6 +35,7 @@ class RSKochavaDestination: RSDestinationPlugin {
         }
     }
     
+    // swiftlint:disable cyclomatic_complexity
     func track(message: TrackMessage) -> TrackMessage? {
         var kochavaEvent: KVAEvent?
         /// For E-Commerce event mapping visit: https://support.kochava.com/reference-information/post-install-event-examples/
@@ -108,11 +109,11 @@ class RSKochavaDestination: RSDestinationPlugin {
 #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
 
 extension RSKochavaDestination: RSPushNotifications {
-    func registeredForRemoteNotifications(deviceToken: Data) {
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         KVAPushNotificationsToken.register(withData: deviceToken)
     }
     
-    func receivedRemoteNotification(userInfo: [AnyHashable : Any]) {
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         let event = KVAEvent(type: .pushOpened)
         event.payloadDictionary = userInfo
         event.send()
@@ -139,10 +140,10 @@ extension RSKochavaDestination: RSPushNotifications {
 
 #endif
 
-
 // MARK: - Support methods
 
 extension RSKochavaDestination {
+    // swiftlint:disable line_length
     var TRACK_RESERVED_KEYWORDS: [String] {
         return [RSKeys.Ecommerce.products, RSKeys.Ecommerce.productName, RSKeys.Ecommerce.productId, RSKeys.Ecommerce.currency, RSKeys.Ecommerce.revenue, RSKeys.Ecommerce.value, RSKeys.Ecommerce.total, RSKeys.Ecommerce.quantity, RSKeys.Ecommerce.query]
     }
@@ -182,7 +183,7 @@ extension RSKochavaDestination {
         if let name = properties[RSKeys.Ecommerce.productName] as? String {
             params?.nameString = name
         }
-        if let productId = properties[RSKeys.Ecommerce.productId] as? String{
+        if let productId = properties[RSKeys.Ecommerce.productId] as? String {
             params?.contentIdString = productId
         }
     }
@@ -218,7 +219,7 @@ extension RSKochavaDestination {
     func getJSONString(list: [String]) -> String? {
         guard !list.isEmpty else { return nil }
         do {
-            let jsonData = try JSONSerialization.data(withJSONObject: list ,options: .prettyPrinted)
+            let jsonData = try JSONSerialization.data(withJSONObject: list, options: .prettyPrinted)
             return String(data: jsonData, encoding: .utf8)
         } catch {
             return nil

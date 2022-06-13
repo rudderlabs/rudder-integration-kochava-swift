@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6555CF618555AF9976598009 /* Pods_RudderKochava.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFC717B1DE1248C608041662 /* Pods_RudderKochava.framework */; };
+		69AC461EAED1FEDE280CBEC0 /* Pods_RudderKochava.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4276DBD4881D185FD747145 /* Pods_RudderKochava.framework */; };
 		ED2A28F82770570400646788 /* RudderKochava.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2A28F72770570400646788 /* RudderKochava.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EDF68FE727D1FD620005AAC6 /* RSFKochavaDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF68FE627D1FD620005AAC6 /* RSFKochavaDestination.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		6B526A975B3B3CB3379EA5EA /* Pods-RudderKochava.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RudderKochava.debug.xcconfig"; path = "Target Support Files/Pods-RudderKochava/Pods-RudderKochava.debug.xcconfig"; sourceTree = "<group>"; };
-		B1604E229F1E632D5968E4FF /* Pods-RudderKochava.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RudderKochava.release.xcconfig"; path = "Target Support Files/Pods-RudderKochava/Pods-RudderKochava.release.xcconfig"; sourceTree = "<group>"; };
-		BFC717B1DE1248C608041662 /* Pods_RudderKochava.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RudderKochava.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1BD54C940AE0F6040CAFCEA0 /* Pods-RudderKochava.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RudderKochava.release.xcconfig"; path = "Target Support Files/Pods-RudderKochava/Pods-RudderKochava.release.xcconfig"; sourceTree = "<group>"; };
+		25D7F612AB106BEFDC18EA6F /* Pods-RudderKochava.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RudderKochava.debug.xcconfig"; path = "Target Support Files/Pods-RudderKochava/Pods-RudderKochava.debug.xcconfig"; sourceTree = "<group>"; };
+		C4276DBD4881D185FD747145 /* Pods_RudderKochava.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RudderKochava.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED2A28EB2770560400646788 /* RudderKochava.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RudderKochava.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED2A28F72770570400646788 /* RudderKochava.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RudderKochava.h; sourceTree = "<group>"; };
 		ED2A28FA2770591E00646788 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -30,7 +30,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6555CF618555AF9976598009 /* Pods_RudderKochava.framework in Frameworks */,
+				69AC461EAED1FEDE280CBEC0 /* Pods_RudderKochava.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,16 +40,16 @@
 		208F25C796D8593BF8DAB48E /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				6B526A975B3B3CB3379EA5EA /* Pods-RudderKochava.debug.xcconfig */,
-				B1604E229F1E632D5968E4FF /* Pods-RudderKochava.release.xcconfig */,
+				25D7F612AB106BEFDC18EA6F /* Pods-RudderKochava.debug.xcconfig */,
+				1BD54C940AE0F6040CAFCEA0 /* Pods-RudderKochava.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		3EBA54F5C9A8DDC4B7DCF87E /* Frameworks */ = {
+		397D7951BAA40282880B5C2E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BFC717B1DE1248C608041662 /* Pods_RudderKochava.framework */,
+				C4276DBD4881D185FD747145 /* Pods_RudderKochava.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -64,7 +64,7 @@
 				ED2A28F52770570400646788 /* Sources */,
 				ED2A28EC2770560400646788 /* Products */,
 				208F25C796D8593BF8DAB48E /* Pods */,
-				3EBA54F5C9A8DDC4B7DCF87E /* Frameworks */,
+				397D7951BAA40282880B5C2E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -119,11 +119,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = ED2A28F22770560400646788 /* Build configuration list for PBXNativeTarget "RudderKochava" */;
 			buildPhases = (
-				B327F43B11C273E95633EF10 /* [CP] Check Pods Manifest.lock */,
+				723D6C1BEA9884A424177BE2 /* [CP] Check Pods Manifest.lock */,
 				ED2A28E62770560400646788 /* Headers */,
 				ED2A28E72770560400646788 /* Sources */,
 				ED2A28E82770560400646788 /* Frameworks */,
 				ED2A28E92770560400646788 /* Resources */,
+				ED8FBE982853AFEE00FBC2A0 /* SwiftLint Script */,
 			);
 			buildRules = (
 			);
@@ -179,7 +180,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		B327F43B11C273E95633EF10 /* [CP] Check Pods Manifest.lock */ = {
+		723D6C1BEA9884A424177BE2 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -200,6 +201,24 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		ED8FBE982853AFEE00FBC2A0 /* SwiftLint Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "SwiftLint Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -339,7 +358,7 @@
 		};
 		ED2A28F32770560400646788 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6B526A975B3B3CB3379EA5EA /* Pods-RudderKochava.debug.xcconfig */;
+			baseConfigurationReference = 25D7F612AB106BEFDC18EA6F /* Pods-RudderKochava.debug.xcconfig */;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -372,7 +391,7 @@
 		};
 		ED2A28F42770560400646788 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B1604E229F1E632D5968E4FF /* Pods-RudderKochava.release.xcconfig */;
+			baseConfigurationReference = 1BD54C940AE0F6040CAFCEA0 /* Pods-RudderKochava.release.xcconfig */;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
