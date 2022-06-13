@@ -106,7 +106,7 @@ class RSKochavaDestination: RSDestinationPlugin {
     }
 }
 
-#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || targetEnvironment(macCatalyst)
 
 extension RSKochavaDestination: RSPushNotifications {
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -122,16 +122,34 @@ extension RSKochavaDestination: RSPushNotifications {
 
 #endif
 
+#if os(tvOS)
+
+import UserNotifications
+
+extension RSKochavaDestination: RSPushNotifications {
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        KVAPushNotificationsToken.register(withData: deviceToken)
+    }
+
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        let event = KVAEvent(type: .pushOpened)
+        event.payloadDictionary = userInfo
+        event.send()
+    }
+}
+
+#endif
+
 #if os(watchOS)
 
 import WatchKit
 
 extension RSKochavaDestination: RSPushNotifications {
-    func registeredForRemoteNotifications(deviceToken: Data) {
+    func didRegisterForRemoteNotifications(withDeviceToken deviceToken: Data) {
         KVAPushNotificationsToken.register(withData: deviceToken)
     }
     
-    func receivedRemoteNotification(userInfo: [AnyHashable: Any]) {
+    func didReceiveRemoteNotification(_ userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (WKBackgroundFetchResult) -> Void) {
         let event = KVAEvent(type: .pushOpened)
         event.payloadDictionary = userInfo
         event.send()
