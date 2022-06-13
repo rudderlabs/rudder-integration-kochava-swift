@@ -18,11 +18,10 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
-    - Rudder
-  trunk:
     - Apple-Cocoapod-KochavaAdNetwork
     - Apple-Cocoapod-KochavaCore
     - Apple-Cocoapod-KochavaTracker
+    - Rudder
 
 EXTERNAL SOURCES:
   RudderKochava:
