@@ -29,7 +29,7 @@ This repository contains the resources and assets required to integrate the [Rud
 
 For more information on configuring Kochava as a destination in RudderStack and the supported events and their mappings, refer to the [Kochava documentation](https://www.rudderstack.com/docs/destinations/attribution/kochava/).
 
-| Important: This device mode integration is supported for Kochava v6.5.4 and above. |
+| Important: This device mode integration is supported for Kochava v5.1.1 and above. |
 | :---|
 
 ## Step 1: Integrate the SDK with Kochava
