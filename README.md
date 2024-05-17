@@ -68,7 +68,7 @@ let config: RSConfig = RSConfig(writeKey: WRITE_KEY)
             .dataPlaneURL(DATA_PLANE_URL)       
              
 RSClient.sharedInstance().configure(with: config)
-RSClient.sharedInstance().addDestination()
+RSClient.sharedInstance().addDestination(RudderKochavaDestination())
 ```
 
 ### Objective C
@@ -81,19 +81,11 @@ RSConfig *config = [[RSConfig alloc] initWithWriteKey:WRITE_KEY];
 [[RSClient sharedInstance] addDestination:[[RudderKochavaDestination alloc] init]];
 ```
 
-## Step 4: Making push notifications
+## Step 4: Make push notifications
 
-Place the below snippet in your `AppDelegate` class
+Place the below snippet in your `AppDelegate` class:
 
-```objective-c
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    [[RSClient sharedInstance] application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
-}
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    [[RSClient sharedInstance] application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
-}
-```
+### Swift
 
 ```swift
 func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -102,6 +94,18 @@ func application(_ application: UIApplication, didRegisterForRemoteNotifications
 
 func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
     RSClient.sharedInstance().application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+}
+```
+
+### Objective C
+
+```objective-c
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    [[RSClient sharedInstance] application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    [[RSClient sharedInstance] application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 ```
 
