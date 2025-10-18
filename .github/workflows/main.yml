@@ -9,6 +9,11 @@ jobs:
     if: github.event.base_ref == 'refs/heads/master'
     runs-on: macOS-latest
     steps:
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@v2
+      with:
+        egress-policy: audit
+
     - uses: actions/checkout@v1
     - name: Publish to CocoaPod register
       env:
